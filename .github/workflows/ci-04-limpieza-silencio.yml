@@ -1,0 +1,29 @@
+# CI - Supuesto 4: Limpieza y Silencio (Modo Batch)
+# Limpia target antes de cada test y usa -B para evitar barras de progreso
+name: CI - Limpieza y Silencio
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descarga el codigo
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # Paso 3: Limpia la carpeta target y ejecuta tests en modo batch
+      # -B (--batch-mode): suprime las barras de progreso del log
+      # clean: borra la carpeta target antes de compilar
+      - name: Limpiar y testear en modo batch
+        run: mvn -B clean test --file pom.xml
