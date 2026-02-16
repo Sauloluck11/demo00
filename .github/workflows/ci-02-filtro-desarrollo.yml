@@ -1,0 +1,28 @@
+# CI - Supuesto 2: El Filtro de Desarrollo
+# Solo se activa cuando el push va dirigido a la rama "feature-dev"
+name: CI - Filtro de Desarrollo
+
+on:
+  push:
+    branches:
+      - feature-dev # Solo escucha en esta rama concreta
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descarga el codigo
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # Paso 3: Compila y ejecuta los tests solo en la rama feature-dev
+      - name: Compilar y testear
+        run: mvn test --file pom.xml
