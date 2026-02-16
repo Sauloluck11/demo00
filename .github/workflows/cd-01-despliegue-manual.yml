@@ -1,0 +1,31 @@
+# CD - Supuesto 1: El Boton de Despliegue Manual
+# Solo se activa cuando el usuario pulsa "Run workflow" en la pestana Actions
+name: CD - Despliegue Manual
+
+on:
+  workflow_dispatch: # Muestra un boton de "Ejecutar" en la interfaz de GitHub
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descarga el codigo
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Paso 3: Genera el .war omitiendo tests para ir mas rapido
+      - name: Generar paquete .war
+        run: mvn -B clean package -DskipTests --file pom.xml
+
+      # Paso 4: Confirma que el .war se ha generado correctamente
+      - name: Verificar que el .war existe
+        run: ls -lh target/*.war
