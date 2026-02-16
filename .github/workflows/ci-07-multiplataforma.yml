@@ -1,0 +1,33 @@
+# CI - Supuesto 7: El Camaleon Multiplataforma
+# Ejecuta los tests en Ubuntu, Windows y macOS de forma simultanea con una matriz
+name: CI - Camaleon Multiplataforma
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # La matriz crea 3 ejecuciones paralelas, una por cada sistema operativo
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    runs-on: ${{ matrix.os }} # Cada job usa el SO de su posicion en la matriz
+
+    steps:
+      # Paso 1: Descarga el codigo en el SO correspondiente
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21 en el SO del job actual
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Paso 3: Ejecuta los tests en el SO actual (Ubuntu, Windows o macOS)
+      - name: Ejecutar tests en ${{ matrix.os }}
+        run: mvn -B clean test --file pom.xml
