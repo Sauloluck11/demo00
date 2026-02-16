@@ -1,0 +1,26 @@
+# CI - Supuesto 1: El Vigilante Universal
+# Se activa en CUALQUIER push a CUALQUIER rama del repositorio
+name: CI - Vigilante Universal
+
+on:
+  push: # Sin especificar ramas = escucha en todas
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descarga el codigo del repositorio
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21 con distribucion Temurin
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # Paso 3: Compila el proyecto con Maven para verificar que no hay errores
+      - name: Compilar con Maven
+        run: mvn compile --file pom.xml
