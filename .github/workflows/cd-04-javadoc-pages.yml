@@ -1,0 +1,39 @@
+# CD - Supuesto 4: Web de Documentacion Tecnica (Javadoc en GitHub Pages)
+# Genera el Javadoc y lo despliega en GitHub Pages con una URL publica
+name: CD - Documentacion GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  javadoc:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Necesario para escribir en la rama gh-pages
+
+    steps:
+      # Paso 1: Descarga el codigo
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Paso 3: Genera el Javadoc en target/site/apidocs
+      - name: Generar Javadoc
+        run: mvn -B javadoc:javadoc --file pom.xml
+
+      # Paso 4: Despliega el Javadoc en la rama gh-pages de GitHub
+      # La URL publica sera: https://Sauloluck11.github.io/demo00/
+      - name: Desplegar Javadoc en GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: target/site/apidocs # Carpeta con el Javadoc generado
+          branch: gh-pages # Rama donde se publica el contenido
