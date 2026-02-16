@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Alumnos</title>
+    <!-- Bootstrap 5.3.8 segun indicaciones del profesor -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Listado de Alumnos</h1>
+
+    <!-- Boton para ir al formulario de nuevo alumno -->
+    <a th:href="@{/alumnos/nuevo}" class="btn btn-primary mb-3">Nuevo Alumno</a>
+
+    <!-- Tabla con todos los alumnos -->
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Email</th>
+                <th>Curso</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Recorre la lista de alumnos enviada por el controlador -->
+            <tr th:each="alumno : ${alumnos}">
+                <td th:text="${alumno.id}"></td>
+                <td th:text="${alumno.nombre}"></td>
+                <td th:text="${alumno.apellidos}"></td>
+                <td th:text="${alumno.email}"></td>
+                <td th:text="${alumno.curso}"></td>
+                <td>
+                    <!-- Enlace para editar el alumno -->
+                    <a th:href="@{/alumnos/{id}/editar(id=${alumno.id})}"
+                       class="btn btn-sm btn-warning">Editar</a>
+
+                    <!-- Formulario POST para eliminar el alumno -->
+                    <form th:action="@{/alumnos/{id}/eliminar(id=${alumno.id})}"
+                          method="post" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('¿Eliminar alumno?')">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
