@@ -1,0 +1,30 @@
+# CI - Supuesto 5: Memoria Inteligente (Caching)
+# Guarda en cache las dependencias de Maven para no descargarlas en cada ejecucion
+name: CI - Memoria Inteligente
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descarga el codigo
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21 con cache de Maven activado
+      # cache: 'maven' guarda ~/.m2 en cache usando el pom.xml como clave
+      # Si el pom.xml no cambia, no se descarga nada de internet
+      - name: Configurar Java 21 con cache Maven
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven' # Activa la cache de dependencias Maven
+
+      # Paso 3: Compila y ejecuta los tests usando las dependencias en cache
+      - name: Compilar y testear con cache
+        run: mvn -B clean test --file pom.xml
