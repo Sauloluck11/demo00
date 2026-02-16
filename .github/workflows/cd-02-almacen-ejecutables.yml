@@ -1,0 +1,36 @@
+# CD - Supuesto 2: El Almacen de Ejecutables
+# Genera el .war y lo deja disponible como artefacto descargable en GitHub Actions
+name: CD - Almacen de Ejecutables
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descarga el codigo
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21 con cache
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Paso 3: Empaqueta el proyecto en .war saltandose los tests
+      # -DskipTests: omite la ejecucion de tests para generar el artefacto mas rapido
+      - name: Generar .war sin tests
+        run: mvn -B clean package -DskipTests --file pom.xml
+
+      # Paso 4: Sube el .war a la seccion de Artifacts de GitHub para su descarga
+      - name: Subir .war como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-ejecutable # Nombre visible en GitHub Actions
+          path: target/*.war # Ruta del archivo generado
