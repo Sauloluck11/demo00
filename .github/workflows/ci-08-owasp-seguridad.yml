@@ -1,0 +1,42 @@
+# CI - Supuesto 8: Escaneo de Vulnerabilidades (SecOps)
+# Analiza las dependencias del proyecto con OWASP Dependency-Check
+name: CI - Escaneo de Vulnerabilidades
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descarga el codigo
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Java 21 con cache
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Paso 3: Compila el proyecto antes del analisis de seguridad
+      - name: Compilar el proyecto
+        run: mvn -B clean compile --file pom.xml
+
+      # Paso 4: Ejecuta OWASP Dependency-Check para detectar vulnerabilidades
+      # El plugin analiza todas las dependencias del pom.xml buscando CVEs conocidos
+      - name: Analizar vulnerabilidades con OWASP
+        run: mvn org.owasp:dependency-check-maven:check --file pom.xml
+        continue-on-error: true # No bloquea el pipeline, solo informa
+
+      # Paso 5: Sube el informe HTML de vulnerabilidades como artefacto
+      - name: Subir informe OWASP
+        if: always() # Se ejecuta siempre, haya o no vulnerabilidades
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-report
+          path: target/dependency-check-report.html
