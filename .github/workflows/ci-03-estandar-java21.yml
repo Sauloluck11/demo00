@@ -1,0 +1,27 @@
+# CI - Supuesto 3: El Estandar Java 21
+# Fuerza el uso de Java 21 distribucion Zulu para estandarizar el entorno
+name: CI - Estandar Java 21
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descarga el codigo
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # Paso 2: Fuerza Java 21 con distribucion Zulu (si se usa otra version, falla)
+      - name: Configurar Java 21 Zulu
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'zulu' # Distribucion Zulu obligatoria
+
+      # Paso 3: Compila el proyecto verificando que Java 21 esta activo
+      - name: Compilar con Java 21
+        run: mvn compile --file pom.xml
